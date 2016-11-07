@@ -1,3 +1,4 @@
+from __future__ import division
 from sys import argv
 from math import log, sqrt
 import numpy as np
@@ -55,7 +56,7 @@ class ID3Tree:
                             max_gain_feat = f
                             
                 self.setTreeNode(max_gain_feat)
-                print("Node created : ", max_gain_feat)
+                #print "Node created : ", max_gain_feat
                                 
                 if self.depth+1 > depth_limit:
                     self.label = findMaxLabel(self.t_set)
@@ -105,11 +106,12 @@ def entropy(t_set):
     for i in np.arange(unique_labels):
         if ent_list[i] > 0:
             entropy += (-1*(ent_list[i]/total_data)*log((ent_list[i]/total_data), 2))
-                
+
     return entropy;
 
     
 def generateSubSet(t_set, f_no, value):
+    subset = []
     try:
         if len(t_set) > 1:
             subset  = t_set[t_set[:,f_no] == value]
@@ -118,8 +120,8 @@ def generateSubSet(t_set, f_no, value):
         else:
             subset = []
     except Exception as msg:
-        print("Exception : ", msg)
-        print("Set", t_set, "\n", f_no, value, "\nSubset", subset, "\n")
+        print "Exception : ", msg
+        print "Set", t_set, "\n", f_no, value, "\nSubset", subset, "\n"
     return subset;
     
 
@@ -228,9 +230,9 @@ def crossValidation (main_training_set, main_test_set, method=5):
             mean = sum([x for x in acc])/len(acc)
             std_dev = sqrt(sum([(a - mean)**2 for a in acc])/len(acc))
             
-            print("\nMethod : ", meth)
-            print("Average accuracy using Method ", meth, ": ", mean)
-            print("Standard Deviation at Method ", meth, ": ", std_dev)
+            print "\nMethod : ", meth
+            print "Average accuracy using Method ", meth, ": ", mean 
+            print "Standard Deviation at Method ", meth, ": ", std_dev
         
             if mean > max_mean:
                 max_mean = mean
@@ -372,14 +374,14 @@ test_set = sp.genfromtxt("test.csv", dtype=str, delimiter=",")
 
 label_idx = 128
 set_label = set(label)
-depth_limit = 10
+depth_limit = 3
 tree_depth = 0
 f_added = []
 
 tree = train(training_set, f_added, depth_limit)
-print("Max Tree Depth : ", tree_depth)
-print("Error Rate : ", (1- test_accuracy(tree, test_set)))
+print "Max Tree Depth : ", tree_depth
+print "Error Rate : ", (1- test_accuracy(tree, test_set))
 
-print("\n----------------------------------------------------------------------------------------------------\n")
-print("Tree Representation : \n")
+print "\n----------------------------------------------------------------------------------------------------\n"
+print "Tree Representation : \n" 
 print(tree.__repr__)
