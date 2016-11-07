@@ -53,8 +53,9 @@ class ID3Tree:
                         if max_gain < gain:
                             max_gain = gain
                             max_gain_feat = f
-                
+                            
                 self.setTreeNode(max_gain_feat)
+                print("Node created : ", max_gain_feat)
                                 
                 if self.depth+1 > depth_limit:
                     self.label = findMaxLabel(self.t_set)
@@ -75,7 +76,10 @@ class ID3Tree:
         
         if self.child:
             value = test_set[self.attribute]
-            c_node = self.values[value]
+            if value in self.values.keys():
+                c_node = self.values[value]
+            else:
+                return self.label
             tree_depth = self.depth
             return c_node.classify(test_set)
         else:
@@ -106,12 +110,16 @@ def entropy(t_set):
 
     
 def generateSubSet(t_set, f_no, value):
-    if len(t_set) > 1:
-        subset  = t_set[t_set[:,f_no] == value]
-    elif t_set[f_no] == value:
-        subset = t_set
-    else:
-        subset = []
+    try:
+        if len(t_set) > 1:
+            subset  = t_set[t_set[:,f_no] == value]
+        elif t_set[f_no] == value:
+            subset = t_set
+        else:
+            subset = []
+    except Exception as msg:
+        print("Exception : ", msg)
+        print("Set", t_set, "\n", f_no, value, "\nSubset", subset, "\n")
     return subset;
     
 
@@ -127,7 +135,7 @@ def calcInfoGain(l_entropy, t_set, feature_no):
 
         #Calculating entropy for each element in the feature
         for av in np.unique(t_set[:,feature_no]):
-            
+
             n_set = generateSubSet(t_set, feature_no, av)
             a_entropy += len(n_set)/len(t_set) * entropy(n_set)
             
@@ -355,12 +363,16 @@ def handleMissingFeature(training_set, replace_set, method):
 
 training_set = sp.genfromtxt("train.csv", dtype=str, delimiter=",")
 label = training_set[:,-1]
-
+'''
+training_set = sp.genfromtxt("bf_test.csv", dtype=str, delimiter=",")
+label = training_set[:,-1]
+'''
 test_set = sp.genfromtxt("test.csv", dtype=str, delimiter=",")
+
 
 label_idx = 128
 set_label = set(label)
-depth_limit = 255
+depth_limit = 10
 tree_depth = 0
 f_added = []
 
