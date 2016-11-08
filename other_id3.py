@@ -181,7 +181,7 @@ def correct_data(dataset, method_num):
 
 def cross_validate1(directory):
     files = [file1 for file1 in os.listdir(directory) if '.data' in file1]
-    heights = [1, 2, 3, 4, 5, 10, 15, 20]
+    heights = [1, 2, 3, 5, 10, 15, 20]
     accuracies = defaultdict(list)
     for i in xrange(len(files)):
         train_files = []
@@ -236,24 +236,25 @@ def cross_validate2(directory):
 def main():
     start = timeit.default_timer()
 
-    training_A = np.genfromtxt(os.sep.join(["train.csv"]), delimiter=',', dtype='c')
-    test_A = np.genfromtxt(os.sep.join(['test.csv']), delimiter=',', dtype='c')
-    training_error = 1 - run_test(training_A, training_A, 10)
-    test_error = 1 - run_test(training_A, test_A, 10)
+    #training_A = np.genfromtxt(os.sep.join(["train.csv"]), delimiter=',', dtype='c')
+    #test_A = np.genfromtxt(os.sep.join(['test.csv']), delimiter=',', dtype='c')
+    #training_error = 1 - run_test(training_A, training_A, 10)
+    #test_error = 1 - run_test(training_A, test_A, 10)
+
+    #depth = get_depth(training_A)
+    #print "!!!!!!!!!!!!!!SETTING A!!!!!!!!!!!!!!!!"
+    #print "training error = " + str(training_error)
+    #print "test error = " + str(test_error)
+    #print "max depth = " + str(depth)
+    cv_dir_A = os.sep.join(['splits'])
+    cv_results_A = cross_validate1(cv_dir_A)
+    for depth in cv_results_A:
+        print "depth = " + str(depth) + ", accuracy = " + str(cv_results_A[depth][0]) + ", std deviation = " + str(cv_results_A[depth][1])
 
     stop = timeit.default_timer()
 
     print stop - start
 
-    #depth = get_depth(training_A)
-    #print "!!!!!!!!!!!!!!SETTING A!!!!!!!!!!!!!!!!"
-    print "training error = " + str(training_error)
-    print "test error = " + str(test_error)
-    #print "max depth = " + str(depth)
-    #cv_dir_A = os.sep.join(['datasets', 'SettingA', 'CVSplits'])
-    #cv_results_A = cross_validate1(cv_dir_A)
-    #for depth in cv_results_A:
-        #print "depth = " + str(depth) + ", accuracy = " + str(cv_results_A[depth][0]) + ", std deviation = " + str(cv_results_A[depth][1])
 
     #print "Best depth was 2"
     #best_test_error_AA = run_test(training_A, test_A, 2)
