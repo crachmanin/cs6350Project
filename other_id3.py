@@ -3,6 +3,7 @@ from collections import Counter, defaultdict, deque
 import os
 import math
 import glob
+import timeit
 
 unique_vals = []
 
@@ -233,10 +234,16 @@ def cross_validate2(directory):
 
 
 def main():
-    training_A = np.genfromtxt(os.sep.join(["bucketed_features.csv"]), delimiter=',', dtype='c')
+    start = timeit.default_timer()
+
+    training_A = np.genfromtxt(os.sep.join(["train.csv"]), delimiter=',', dtype='c')
     test_A = np.genfromtxt(os.sep.join(['test.csv']), delimiter=',', dtype='c')
     training_error = 1 - run_test(training_A, training_A, 10)
     test_error = 1 - run_test(training_A, test_A, 10)
+
+    stop = timeit.default_timer()
+
+    print stop - start
 
     #depth = get_depth(training_A)
     #print "!!!!!!!!!!!!!!SETTING A!!!!!!!!!!!!!!!!"
