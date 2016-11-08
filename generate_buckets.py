@@ -6,13 +6,14 @@ import csv
 data = sp.genfromtxt("features.csv",delimiter =",")
 digitized = data[:]
 all_buckets = []
+bucket_size = 20
 
 for col in np.arange(128):
     min_value = data[:,col].min()
     max_value = data[:,col].max()
 
     #Initializing the bucket and fssss
-    bucket = np.linspace(min_value, max_value, 20)
+    bucket = np.linspace(min_value, max_value, bucket_size)
     digitized[:,col] = np.digitize(data[:,col], bucket)
 
     #Writing to bucket.config file
@@ -50,6 +51,17 @@ train_fp = open("train.csv", "wb")
 train_writer = csv.writer(train_fp)
 train_writer.writerows(train_data.tolist())
 train_fp.close()
+
+#Generate cross validation data
+shuffled = np.random.shuffle(consolidated)
+cross = np.array_split(consolidated, 6)
+
+file_name = "cross_train"
+for idx in np.arange(6):
+	cross_fp = open(file_name+str(idx+1),"wb")
+	cross_writer = csv.writer(cross_fp)
+	cross_writer.writerows(cross[idx])
+	cross_fp.close()
 
 #Creating a config file to store bucket info for future reference
 config_fp = open("buckets.config","wb")
