@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import os
 import csv
+from sklearn.externals import joblib
 
 '''Below function is currently not in use.
 def kmean():
@@ -39,7 +40,8 @@ for dir_name in os.listdir(dataset_dir):
             kp, des = sift.detectAndCompute(gray,None)
             
             #Storing feature descriptor for each image in a file
-            np.save(os.path.join(feature_dir, dir_name, images), des)
+            #np.save(os.path.join(feature_dir, dir_name, images), des)    #Old - Required more space
+            joblib.dump(des, os.path.join(feature_dir, dir_name, images+str('.desc')), compress = 3)
             
             #Vector Quantization using Averaging of columns
             quantized = np.empty(128)
