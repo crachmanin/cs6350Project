@@ -11,7 +11,7 @@ def kmean():
 
 descriptor_list = []
 feature_list = []
-exceptions = open("ExceptionList","wb")  #File to list images whose features extraction failed
+exceptions = open("Exception_FeatureExtraction","wb")  #File to list images whose features extraction failed
 dataset_dir = "256_ObjectCategories"
 feature_dir = "256_ObjectFeatures"
 
