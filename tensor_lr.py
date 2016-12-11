@@ -7,7 +7,7 @@ from random import uniform
 from sklearn.externals import joblib
 
 
-def train_svm(train_set, epoch_size = 1, c = 100.0, gamma = .01):
+def train_svm(train_set, epoch_size = 1, sigma = 30.0, gamma = .1):
 
     label_idx = len(train_set[0,:])-1
     weights = np.zeros(label_idx)
@@ -16,15 +16,16 @@ def train_svm(train_set, epoch_size = 1, c = 100.0, gamma = .01):
     for e in range(epoch_size):
         np.random.shuffle(train_set)
         for i in range(len(train_set)):
+            label = train_set[i,label_idx]
             d_prod = np.dot(weights.transpose(), train_set[i,:label_idx])
             #print("Dot Product : ", d_prod)
-            t += 1
-            gamma_t = gamma/(1 + (gamma * t/c))
+            # t += 1
+            # gamma_t = gamma/(1 + (gamma * t/c))
+            gamma_t = gamma/(1 + t)
 
-            weights *= (1-gamma_t)
-            if d_prod * train_set[i][label_idx] <= 1:
-                weights += (gamma_t * c * train_set[i][label_idx]
-                             * train_set[i,:label_idx])
+            first_part = train_set[i,:label_idx] * -label/(1 + np.exp(label * d_prod))
+            second_part = 2 * weights / (sigma ** 2)
+            weights -= (gamma_t * (first_part + second_part))
 
         #print(weights)
 
@@ -48,7 +49,6 @@ def classify(test_set, labels, classifiers):
         #print label, labels[i]
         if label != labels[i]:
             mistakes += 1
-
     return float(mistakes/len(test_set))
 
 def f_score(test_set, weights):
@@ -91,7 +91,7 @@ def main(args):
         label = np.unique(train_set[:,-1])
         classifiers = {}
 
-        epoch = 100 
+        epoch = 20
 
         #Adding the bias term
         bias = 1
