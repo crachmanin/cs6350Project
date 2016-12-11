@@ -7,11 +7,11 @@ from random import uniform
 from sklearn.externals import joblib
 
 
-def train_svm(train_set, epoch_size = 1, c = 1, gamma = 0.01):
+def train_svm(train_set, epoch_size = 1, c = 3.0, gamma = 0.05):
 
     label_idx = len(train_set[0,:])-1
     weights = np.zeros(label_idx)
-    t = 0
+    t = 0.0
      
     for e in range(epoch_size):
         np.random.shuffle(train_set)
@@ -79,13 +79,19 @@ def f_score(test_set, weights):
             
 def main(args):
     if len(args)<=1:
+
+        ''' This thing is for training with the clustered dataset'''
         histogram_dir = "Histograms"
         print "Enter the cluster value to check with : "
         cluster_size = input()
 
         k, cbook, train_set = joblib.load(os.path.join(histogram_dir, str(cluster_size) + "_train.var"))
         k, cbook, test_set = joblib.load(os.path.join(histogram_dir, str(cluster_size) + "_test.var"))
-        
+        '''
+
+        train_set = sp.genfromtxt("train.csv", delimiter=",", dtype=str)
+        test_set = sp.genfromtxt("test.csv", delimiter=",", dtype=str)
+        '''
         label = np.unique(train_set[:,-1])
         classifiers = {}
                
@@ -99,14 +105,19 @@ def main(args):
         
         #Training the multiclass SVM classifier for each label
         for lab in label:
+            #print "Training for label : ", lab
             new_train_set = np.array(train_set, copy=True)
             new_train_set[:,-1] = np.asarray([new_train_set[:,-1] == lab]).astype(np.int)
             new_train_set = new_train_set.astype(np.float)
             classifiers[lab] = train_svm(new_train_set, epoch)
-            
+        
+        '''    
+        print "\nWeights dictionary : \n"
         for key in classifiers.keys():
             print key, "::", classifiers[key]
-            
+        '''
+
+        print "Beginning Classification"
         print "Accuracy : ", 1 - classify(test_set[:,:-1].astype(np.float), test_set[:,-1], classifiers)
              
     #Below code is currently not used.    
